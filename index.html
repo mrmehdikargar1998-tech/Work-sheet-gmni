@@ -1,0 +1,431 @@
+```html
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ثبت ورود و خروج</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Vazirmatn Persian Font from Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <style>
+        body {
+            font-family: 'Vazirmatn', sans-serif;
+            background-color: #f1f5f9;
+        }
+        /* Custom styled scrollbar for history container */
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 5px;
+            height: 5px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #f1f5f9;
+            border-radius: 6px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 6px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+        /* Custom time inputs appearance */
+        input[type="time"]::-webkit-calendar-picker-indicator {
+            cursor: pointer;
+            filter: opacity(0.6);
+        }
+    </style>
+</head>
+<body class="min-h-screen flex items-center justify-center p-3 sm:p-6 bg-slate-100">
+
+    <div class="w-full max-w-lg bg-white rounded-3xl shadow-xl p-5 sm:p-8 border border-slate-100 transition-all duration-300">
+        
+        <!-- Header -->
+        <div class="flex items-center justify-center gap-3 mb-6">
+            <h1 class="text-2xl sm:text-3xl font-extrabold text-slate-800 tracking-tight">ثبت ورود و خروج</h1>
+            <span class="text-3xl sm:text-4xl animate-bounce">🕰️</span>
+        </div>
+
+        <form id="attendanceForm" onsubmit="handleSave(event)" class="space-y-4">
+            
+            <!-- Jalali Date Input -->
+            <div>
+                <div class="flex items-center justify-between mb-1.5">
+                    <label for="dateInput" class="flex items-center gap-1.5 text-sm font-bold text-slate-700">
+                        <span>📅</span> تاریخ شمسی
+                    </label>
+                    <button 
+                        type="button" 
+                        onclick="setCurrentJalaliDate()" 
+                        class="text-xs text-blue-600 hover:text-blue-800 font-semibold bg-blue-50 px-2 py-1 rounded-lg transition"
+                    >
+                        درج تاریخ امروز
+                    </button>
+                </div>
+                <input 
+                    type="text" 
+                    id="dateInput" 
+                    placeholder="۱۴۰۳/۰۷/۱۲" 
+                    required
+                    pattern="^[1-9]\d{3}\/(0[1-9]|1[0-2])\/(0[1-9]|[12]\d|3[01])$"
+                    title="لطفاً تاریخ را به صورت ۱۴۰۳/۰۷/۱۲ وارد کنید"
+                    class="w-full px-4 py-3 rounded-2xl border border-slate-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-100 outline-none text-slate-800 placeholder-slate-400 transition-all text-center font-bold tracking-wider"
+                >
+            </div>
+
+            <!-- Entry Time Input -->
+            <div>
+                <div class="flex items-center justify-between mb-1.5">
+                    <label for="entryTimeInput" class="flex items-center gap-1.5 text-sm font-bold text-slate-700">
+                        <span class="w-3.5 h-3.5 rounded-full bg-emerald-500 inline-block shadow-sm"></span> ساعت ورود
+                    </label>
+                    <button 
+                        type="button" 
+                        onclick="setCurrentEntryTime()" 
+                        class="text-xs text-emerald-600 hover:text-emerald-800 font-semibold bg-emerald-50 px-2 py-1 rounded-lg transition"
+                    >
+                        زمان کنونی
+                    </button>
+                </div>
+                <input 
+                    type="time" 
+                    id="entryTimeInput" 
+                    required
+                    class="w-full px-4 py-3 rounded-2xl border border-slate-200 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-100 outline-none text-slate-800 font-bold transition-all text-center"
+                >
+            </div>
+
+            <!-- Exit Time Input -->
+            <div>
+                <div class="flex items-center justify-between mb-1.5">
+                    <label for="exitTimeInput" class="flex items-center gap-1.5 text-sm font-bold text-slate-700">
+                        <span class="w-3.5 h-3.5 rounded-full bg-rose-500 inline-block shadow-sm"></span> ساعت خروج
+                    </label>
+                    <button 
+                        type="button" 
+                        onclick="setCurrentExitTime()" 
+                        class="text-xs text-rose-600 hover:text-rose-800 font-semibold bg-rose-50 px-2 py-1 rounded-lg transition"
+                    >
+                        زمان کنونی
+                    </button>
+                </div>
+                <input 
+                    type="time" 
+                    id="exitTimeInput" 
+                    required
+                    class="w-full px-4 py-3 rounded-2xl border border-slate-200 focus:border-rose-500 focus:ring-2 focus:ring-rose-100 outline-none text-slate-800 font-bold transition-all text-center"
+                >
+            </div>
+
+            <!-- Submit Button -->
+            <button 
+                type="submit" 
+                class="w-full py-3.5 px-4 bg-blue-600 hover:bg-blue-700 active:scale-[0.98] text-white font-bold rounded-2xl shadow-lg shadow-blue-500/25 transition-all duration-200 flex items-center justify-center gap-2 text-base mt-3"
+            >
+                <span>💾</span> ثبت اطلاعات
+            </button>
+        </form>
+
+        <!-- Notification Toast -->
+        <div id="toast" class="hidden mt-4 p-3 rounded-xl text-center text-sm font-semibold transition-all duration-300"></div>
+
+        <div class="mt-8 border-t border-slate-100 pt-6">
+            <div class="flex items-center justify-between mb-3">
+                <h2 class="text-base font-bold text-slate-800 flex items-center gap-2">
+                    <span>📜</span> سوابق ثبت شده
+                </h2>
+                <div class="flex items-center gap-2">
+                    <span id="recordCount" class="text-xs bg-slate-100 text-slate-600 px-2.5 py-1 rounded-full font-bold">۰ مورد</span>
+                    <button 
+                        onclick="copyHistoryText()" 
+                        title="کپی متنی سوابق"
+                        class="text-xs bg-slate-100 hover:bg-slate-200 text-slate-700 px-2.5 py-1 rounded-lg transition font-medium flex items-center gap-1"
+                    >
+                        📋 کپی
+                    </button>
+                </div>
+            </div>
+
+            <!-- Table displaying history records -->
+            <div class="max-h-64 overflow-y-auto custom-scrollbar border border-slate-200 rounded-2xl bg-slate-50/50 shadow-inner">
+                <table class="w-full text-xs sm:text-sm text-right text-slate-700">
+                    <thead class="text-xs text-slate-500 bg-slate-100/90 sticky top-0 backdrop-blur-sm border-b border-slate-200 font-bold">
+                        <tr>
+                            <th scope="col" class="px-2 sm:px-3 py-2.5 text-center">تاریخ</th>
+                            <th scope="col" class="px-2 sm:px-3 py-2.5 text-center">ورود</th>
+                            <th scope="col" class="px-2 sm:px-3 py-2.5 text-center">خروج</th>
+                            <th scope="col" class="px-2 sm:px-3 py-2.5 text-center">مدت</th>
+                            <th scope="col" class="px-1 sm:px-2 py-2.5 text-center">حذف</th>
+                        </tr>
+                    </thead>
+                    <tbody id="historyTableBody">
+                        <!-- History rows inserted via JS -->
+                    </tbody>
+                </table>
+                <div id="emptyState" class="text-center py-8 text-slate-400 text-xs font-medium">
+                    هنوز هیچ سابقه‌ای ثبت نشده است.
+                </div>
+            </div>
+        </div>
+
+        <div class="mt-4 flex gap-2">
+            <button 
+                type="button" 
+                onclick="showConfirmModal()"
+                class="w-full py-3 px-4 bg-slate-700 hover:bg-slate-800 active:scale-[0.98] text-white font-medium rounded-2xl transition-all duration-200 flex items-center justify-center gap-2 text-sm shadow-md"
+            >
+                <span>🗑️</span> پاک کردن همه سوابق
+            </button>
+        </div>
+
+    </div>
+
+    <!-- Custom Modal Dialog for Clear Confirmation -->
+    <div id="confirmModal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm hidden items-center justify-center p-4 z-50 transition-opacity">
+        <div class="bg-white rounded-3xl p-6 max-w-sm w-full shadow-2xl text-center space-y-4">
+            <div class="text-4xl">⚠️</div>
+            <h3 class="text-lg font-bold text-slate-800">حذف تمام سوابق</h3>
+            <p class="text-sm text-slate-600">آیا اطمینان دارید که می‌خواهید تمام سوابق ثبت‌شده را پاک کنید؟ این عملیات قابل بازگشت نیست.</p>
+            <div class="flex gap-2 pt-2">
+                <button onclick="clearAllRecords()" class="flex-1 py-2.5 bg-rose-600 hover:bg-rose-700 text-white font-bold rounded-xl transition text-sm">
+                    بله، پاک شود
+                </button>
+                <button onclick="hideConfirmModal()" class="flex-1 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-xl transition text-sm">
+                    انصراف
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const STORAGE_KEY = 'github_persian_attendance_records';
+
+        window.addEventListener('DOMContentLoaded', () => {
+            renderTable();
+            setCurrentJalaliDate();
+        });
+
+        // Convert English numbers to Persian digits
+        function toPersianDigits(str) {
+            if (str === null || str === undefined) return '';
+            return String(str).replace(/\d/g, d => '۰۱۲۳۴۵۶۷۸۹'[d]);
+        }
+
+        // Get current Jalali (Solar Hijri) Date
+        function getTodayJalali() {
+            try {
+                const today = new Date();
+                const formatter = new Intl.DateTimeFormat('fa-IR-u-ca-persian', {
+                    year: 'numeric',
+                    month: '2-digit',
+                    day: '2-digit'
+                });
+                const parts = formatter.formatToParts(today);
+                let year = '', month = '', day = '';
+                
+                parts.forEach(p => {
+                    if (p.type === 'year') year = p.value;
+                    if (p.type === 'month') month = p.value;
+                    if (p.type === 'day') day = p.value;
+                });
+
+                // Standardize numbers to English for consistency in input
+                const faToEn = s => s.replace(/[۰-۹]/g, d => '۰۱۲۳۴۵۶۷۸۹'.indexOf(d));
+                return `${faToEn(year)}/${faToEn(month)}/${faToEn(day)}`;
+            } catch (err) {
+                return '۱۴۰۳/۰۷/۱۲';
+            }
+        }
+
+        function setCurrentJalaliDate() {
+            document.getElementById('dateInput').value = toPersianDigits(getTodayJalali());
+        }
+
+        function setCurrentEntryTime() {
+            const now = new Date();
+            const hours = String(now.getHours()).padStart(2, '0');
+            const minutes = String(now.getMinutes()).padStart(2, '0');
+            document.getElementById('entryTimeInput').value = `${hours}:${minutes}`;
+        }
+
+        function setCurrentExitTime() {
+            const now = new Date();
+            const hours = String(now.getHours()).padStart(2, '0');
+            const minutes = String(now.getMinutes()).padStart(2, '0');
+            document.getElementById('exitTimeInput').value = `${hours}:${minutes}`;
+        }
+
+        // Calculate time duration between entry and exit
+        function calculateDuration(entry, exit) {
+            const [entryH, entryM] = entry.split(':').map(Number);
+            const [exitH, exitM] = exit.split(':').map(Number);
+
+            let entryTotalMinutes = entryH * 60 + entryM;
+            let exitTotalMinutes = exitH * 60 + exitM;
+
+            if (exitTotalMinutes < entryTotalMinutes) {
+                // If exit is on next day
+                exitTotalMinutes += 24 * 60;
+            }
+
+            const diffMinutes = exitTotalMinutes - entryTotalMinutes;
+            const hours = Math.floor(diffMinutes / 60);
+            const minutes = diffMinutes % 60;
+
+            if (hours > 0 && minutes > 0) {
+                return `${toPersianDigits(hours)}س ${toPersianDigits(minutes)}د`;
+            } else if (hours > 0) {
+                return `${toPersianDigits(hours)} ساعت`;
+            } else {
+                return `${toPersianDigits(minutes)} دقیقه`;
+            }
+        }
+
+        function getRecords() {
+            const saved = localStorage.getItem(STORAGE_KEY);
+            return saved ? JSON.parse(saved) : [];
+        }
+
+        function handleSave(e) {
+            e.preventDefault();
+
+            const date = document.getElementById('dateInput').value.trim();
+            const entryTime = document.getElementById('entryTimeInput').value;
+            const exitTime = document.getElementById('exitTimeInput').value;
+
+            if (!date || !entryTime || !exitTime) {
+                showToast('لطفاً تمامی فیلدها را به درستی وارد کنید.', 'bg-rose-100 text-rose-700');
+                return;
+            }
+
+            const duration = calculateDuration(entryTime, exitTime);
+
+            const newRecord = {
+                id: Date.now(),
+                date: date,
+                entryTime: entryTime,
+                exitTime: exitTime,
+                duration: duration
+            };
+
+            const records = getRecords();
+            records.unshift(newRecord);
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(records));
+
+            // Clear inputs
+            document.getElementById('entryTimeInput').value = '';
+            document.getElementById('exitTimeInput').value = '';
+
+            renderTable();
+            showToast('اطلاعات با موفقیت ذخیره شد!', 'bg-emerald-100 text-emerald-700');
+        }
+
+        function deleteRecord(id) {
+            let records = getRecords();
+            records = records.filter(item => item.id !== id);
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(records));
+            renderTable();
+            showToast('سابقه انتخاب‌شده حذف شد.', 'bg-amber-100 text-amber-700');
+        }
+
+        function showConfirmModal() {
+            const records = getRecords();
+            if (records.length === 0) {
+                showToast('هیچ سابقه‌ای برای پاک کردن وجود ندارد.', 'bg-slate-100 text-slate-700');
+                return;
+            }
+            document.getElementById('confirmModal').classList.remove('hidden');
+            document.getElementById('confirmModal').classList.add('flex');
+        }
+
+        function hideConfirmModal() {
+            document.getElementById('confirmModal').classList.add('hidden');
+            document.getElementById('confirmModal').classList.remove('flex');
+        }
+
+        function clearAllRecords() {
+            localStorage.removeItem(STORAGE_KEY);
+            hideConfirmModal();
+            renderTable();
+            showToast('تمامی سوابق با موفقیت پاک شدند.', 'bg-rose-100 text-rose-700');
+        }
+
+        function copyHistoryText() {
+            const records = getRecords();
+            if (records.length === 0) {
+                showToast('سابقه‌ای برای کپی وجود ندارد.', 'bg-slate-100 text-slate-700');
+                return;
+            }
+
+            let text = "📋 سوابق ورود و خروج:\n\n";
+            records.forEach((r, idx) => {
+                text += `${idx + 1}. تاریخ: ${toPersianDigits(r.date)} | ورود: ${toPersianDigits(r.entryTime)} | خروج: ${toPersianDigits(r.exitTime)} | مدت: ${r.duration}\n`;
+            });
+
+            // Fallback copy implementation
+            const textArea = document.createElement("textarea");
+            textArea.value = text;
+            document.body.appendChild(textArea);
+            textArea.select();
+            document.execCommand('copy');
+            document.body.removeChild(textArea);
+
+            showToast('سوابق در حافظه کپی شد!', 'bg-blue-100 text-blue-700');
+        }
+
+        function showToast(message, colorClasses) {
+            const toast = document.getElementById('toast');
+            toast.className = `mt-4 p-3 rounded-xl text-center text-sm font-bold transition-all duration-300 ${colorClasses}`;
+            toast.textContent = message;
+            toast.classList.remove('hidden');
+
+            setTimeout(() => {
+                toast.classList.add('hidden');
+            }, 3000);
+        }
+
+        function renderTable() {
+            const records = getRecords();
+            const tbody = document.getElementById('historyTableBody');
+            const emptyState = document.getElementById('emptyState');
+            const recordCount = document.getElementById('recordCount');
+
+            tbody.innerHTML = '';
+            recordCount.textContent = `${toPersianDigits(records.length)} مورد`;
+
+            if (records.length === 0) {
+                emptyState.classList.remove('hidden');
+                return;
+            } else {
+                emptyState.classList.add('hidden');
+            }
+
+            records.forEach(item => {
+                const tr = document.createElement('tr');
+                tr.className = 'border-b border-slate-100 hover:bg-slate-100/60 transition-colors';
+                tr.innerHTML = `
+                    <td class="px-2 sm:px-3 py-3 text-center font-bold text-slate-800">${toPersianDigits(item.date)}</td>
+                    <td class="px-2 sm:px-3 py-3 text-center text-emerald-600 font-extrabold dir-ltr">${toPersianDigits(item.entryTime)}</td>
+                    <td class="px-2 sm:px-3 py-3 text-center text-rose-600 font-extrabold dir-ltr">${toPersianDigits(item.exitTime)}</td>
+                    <td class="px-2 sm:px-3 py-3 text-center text-slate-600 font-semibold">${item.duration}</td>
+                    <td class="px-1 sm:px-2 py-3 text-center">
+                        <button 
+                            onclick="deleteRecord(${item.id})" 
+                            title="حذف سابقه"
+                            class="text-slate-400 hover:text-rose-600 hover:bg-rose-50 p-1.5 rounded-lg transition-all"
+                        >
+                            🗑️
+                        </button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+    </script>
+</body>
+</html>
+```
